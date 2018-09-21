@@ -4,10 +4,9 @@
 
 # Set up environment
 echo " * Setting up..."
-mkdir -p tmpfs
+TEMP_DIR=$(mktemp -d)
 mkdir -p results
-mount -t tmpfs none tmpfs
-cp -R le-filesystem/. tmpfs/
+cp -R le-filesystem/. $TEMP_DIR
 
 # Crunch
 for COMPRESSION_TYPE in gzip lzo zstd; do
@@ -22,7 +21,7 @@ for COMPRESSION_TYPE in gzip lzo zstd; do
         for BLOCK_SIZE in 4096 8192 16384 32768 65536 131072 262144 524288 1048576; do
             FILENAME="results/squashfs-$COMPRESSION_TYPE-$COMPRESSION_STRENGTH-$BLOCK_SIZE.squashfs"
             echo "   * Running a squashfs using compression $COMPRESSION_TYPE level $COMPRESSION_STRENGTH, blocksize $BLOCK_SIZE"
-            ( time mksquashfs tmpfs $FILENAME \
+            ( time mksquashfs $TEMP_DIR $FILENAME \
                 -b $BLOCK_SIZE -comp $COMPRESSION_TYPE -Xcompression-level $COMPRESSION_STRENGTH -noappend ) \
                 >  $FILENAME.results \
                 2> $FILENAME.compress_time
@@ -47,5 +46,4 @@ done
 
 # Clean up
 echo " * Cleaning up..."
-umount -l tmpfs
-rmdir tmpfs
+rm -r $TEMP_DIR
