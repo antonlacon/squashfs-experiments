@@ -19,7 +19,7 @@ for COMPRESSION_TYPE in gzip lzo zstd; do
     fi
 
     for COMPRESSION_STRENGTH in ${COMPRESSION_LEVEL[*]}; do
-        for BLOCK_SIZE in 4096 8192 16384 32768 65536 131072; do
+        for BLOCK_SIZE in 4096 8192 16384 32768 65536 131072 262144 524288 1048576; do
             FILENAME="results/squashfs-$COMPRESSION_TYPE-$COMPRESSION_STRENGTH-$BLOCK_SIZE.squashfs"
             echo "   * Running a squashfs using compression $COMPRESSION_TYPE level $COMPRESSION_STRENGTH, blocksize $BLOCK_SIZE"
             ( time mksquashfs tmpfs $FILENAME \
